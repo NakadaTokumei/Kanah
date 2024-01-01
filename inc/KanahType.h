@@ -8,12 +8,13 @@
 namespace kanah
 {
 
+// Start Integer Type
 enum class IntBit
 {
     INTEGER_NONE,
     INTEGER_32,
     INTEGER_64,
-    INTEGER_128 // For SIMD
+    INTEGER_128 // For SIMD(Reserved)
 };
 
 template<IntBit bit = IntBit::INTEGER_NONE, typename = void>
@@ -50,6 +51,51 @@ public:
 
     WasmEdge_Value GetValue(void) const;
 };
+// End Integer Type
+
+// Start Float Type
+enum class FloatBit
+{
+    FLOAT_NONE,
+    FLOAT_32,
+    FLOAT_64
+};
+
+template<FloatBit bit = FloatBit::FLOAT_NONE, typename = void>
+class Float;
+
+template<>
+class Float<FloatBit::FLOAT_NONE>
+{
+public:
+    void SetValue(float &);
+    void SetValue(float&&);
+
+    const float GetValue(void);
+};
+
+template<FloatBit BIT>
+class Float<BIT, std::enable_if_t<(BIT == FloatBit::FLOAT_32)>>
+{
+    WasmEdge_Value val;
+public:
+    void SetValue(const float& val);
+    void SetValue(float&& val);
+
+    WasmEdge_Value GetValue(void) const;
+};
+
+template<FloatBit BIT>
+class Float<BIT, std::enable_if_t<(BIT == FloatBit::FLOAT_64)>>
+{
+    WasmEdge_Value val;
+public:
+    void SetValue(const double& val);
+    void SetValue(double&& val);
+
+    WasmEdge_Value GetValue(void) const;
+};
+// End Float Type
 
 }
 
